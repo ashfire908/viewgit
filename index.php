@@ -92,6 +92,9 @@ if ($action === 'index') {
  */
 elseif ($action === 'archive') {
 	$project = validate_project($_REQUEST['p']);
+	if (isset($conf['auth_lib'])){
+	    auth_project($project);
+	}
 	$info = get_project_info($project);
 	$tree = validate_hash($_REQUEST['h']);
 	$type = $_REQUEST['t'];
@@ -149,6 +152,9 @@ elseif ($action === 'archive') {
  */
 elseif ($action === 'blob') {
 	$project = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($project);
+	}
 	$hash = validate_hash($_REQUEST['h']);
 	$name = $_REQUEST['n'];
 
@@ -172,6 +178,9 @@ elseif ($action === 'co') {
 
 	// eg. info/refs, HEAD
 	$p = validate_project($_REQUEST['p']); // project
+    if (isset($conf['auth_lib'])){
+	    auth_project($p);
+	}
 	$r = $_REQUEST['r']; // path
 
 	$gitdir = $conf['projects'][$p]['repo'];
@@ -201,6 +210,9 @@ elseif ($action === 'co') {
 elseif ($action === 'commit') {
 	$template = 'commit';
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 	$page['title'] = "$page[project] - Commit - ViewGit";
 	$page['commit_id'] = validate_hash($_REQUEST['h']);
 	$page['subtitle'] = "Commit ". substr($page['commit_id'], 0, 6);
@@ -232,6 +244,9 @@ elseif ($action === 'commit') {
 elseif ($action === 'commitdiff') {
 	$template = 'commitdiff';
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 	$page['title'] = "$page[project] - Commitdiff - ViewGit";
 	$hash = validate_hash($_REQUEST['h']);
 	$page['commit_id'] = $hash;
@@ -255,6 +270,9 @@ elseif ($action === 'commitdiff') {
 
 elseif ($action === 'patch') {
 	$project = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($project);
+	}
 	$hash = validate_hash($_REQUEST['h']);
 	$filename = "$project-". substr($hash, 0, 7) .".patch";
 
@@ -274,6 +292,9 @@ elseif ($action === 'patch') {
  */
 elseif ($action === 'rss-log') {
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 
 	$scheme = !isset($conf['uri_scheme'])? 'http' : $conf['uri_scheme'];
 	$ext_url = $scheme . '://'. $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) .'/';
@@ -320,6 +341,9 @@ elseif ($action === 'search') {
 	$template = 'shortlog';
 
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 
 	$info = git_get_commit_info($page['project']);
 	$page['commit_id'] = $info['h'];
@@ -357,6 +381,9 @@ elseif ($action === 'search') {
 elseif ($action === 'shortlog') {
 	$template = 'shortlog';
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 	$page['title'] = "$page[project] - Shortlog - ViewGit";
 	$page['subtitle'] = "Shortlog";
 	if (isset($_REQUEST['h'])) {
@@ -379,6 +406,9 @@ elseif ($action === 'shortlog') {
 elseif ($action === 'summary') {
 	$template = 'summary';
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 	$page['title'] = "$page[project] - Summary - ViewGit";
 	$page['subtitle'] = "Summary";
 
@@ -406,6 +436,9 @@ elseif ($action === 'summary') {
 elseif ($action === 'tags') {
 	$template = 'tags';
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 	$page['title'] = "$page[project] - Tags - ViewGit";
 
 	$info = git_get_commit_info($page['project']);
@@ -427,6 +460,9 @@ elseif ($action === 'tags') {
 elseif ($action === 'tree') {
 	$template = 'tree';
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 	if (isset($_REQUEST['h'])) {
 		$page['tree_id'] = validate_hash($_REQUEST['h']);
 	}
@@ -476,6 +512,9 @@ elseif ($action === 'tree') {
 elseif ($action === 'viewblob') {
 	$template = 'blob';
 	$page['project'] = validate_project($_REQUEST['p']);
+    if (isset($conf['auth_lib'])){
+	    auth_project($page['project']);
+	}
 	$page['hash'] = validate_hash($_REQUEST['h']);
 	$page['title'] = "$page[project] - Blob - ViewGit";
 	if (isset($_REQUEST['hb'])) {

@@ -64,3 +64,8 @@ function auth_check()
 
 }
 
+// Blank project access function
+function auth_project($project)
+{
+    return;
+}

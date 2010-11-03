@@ -87,4 +87,9 @@ global $page;
 	require('templates/footer.php');	
 	die;
 }
-?>
+
+// Blank project access function
+function auth_project($project)
+{
+    return;
+}
