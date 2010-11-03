@@ -42,10 +42,16 @@ global $page;
 	{
 		$username=$_REQUEST['username'];
 		$password=md5($_REQUEST['password']);
-		if (isset($conf['auth_simple_users'][$username]) && $conf['auth_simple_users'][$username]==$password)
+		if (isset($conf['auth_simple_users']))
 		{
-			$_SESSION['loginname']=$username;
-			return;
+			foreach($conf['auth_simple_users'] as $user => $pass)
+			{
+				if (strtolower($user) == strtolower($username) and $pass == $password)
+				{
+					$_SESSION['loginname']=$user;
+					return;
+				}
+			}
 		}
 		if ($username=="md5")
 			$loginmessage="MD5: ".$password;

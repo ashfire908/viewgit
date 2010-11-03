@@ -45,11 +45,16 @@ global $page;
 	{
 		$username=$_REQUEST['username'];
 		$password=md5($_REQUEST['password']);
-		if (isset($conf['auth_simplerepo_users'][$username]) && isset($conf['auth_simplerepo_users'][$username]['password'])
-		    && $conf['auth_simplerepo_users'][$username]['password']==$password)
+		if (isset($conf['auth_simple_users']))
 		{
-			$_SESSION['loginname']=$username;
-			return;
+			foreach($conf['auth_simple_users'] as $user => $data)
+			{
+				if (strtolower($user) == strtolower($username) and $data['password'] == $password)
+				{
+					$_SESSION['loginname']=$user;
+					return;
+				}
+			}
 		}
 		if ($username=="md5")
 			$loginmessage="MD5: ".$password;
