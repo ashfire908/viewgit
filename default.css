@@ -270,3 +270,8 @@ table.tree .blob a.item_name{
 	font-size: 1.2em;
 }
 
+/* Render Plugin */
+.rendered {
+	border-color: #ddd;
+	background-color: #f9f9f9;
+}
