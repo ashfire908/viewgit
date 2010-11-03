@@ -127,23 +127,16 @@ function auth_check()
 ?>
 	<h2>Login Required</h2>
 <?php if (isset($loginmessage)):?>
-	<p style="border:1px solid red; padding:2px; background:#f77;"><?php echo htmlspecialchars($loginmessage)?><p>
+	<p style="border: 1px solid red; padding: 2px; background: #f77;"><?php echo htmlspecialchars($loginmessage)?></p>
 <?php endif ?>
-	<form method="POST" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
-	<table>
-		<tr>
-			<td width="100pt">User Name:</td>
-			<td><input type="text" name="username" id="username"></td>
-		</tr>
-		<tr>
-			<td>Password:</td>
-			<td><input type="password" name="password"></td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td><input type="submit" name="login_action" value="Login"></td>
-		</tr>
-	</table>
+	<form id="login" method="POST" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
+		<fieldset>
+			<label for="username">User Name:</label>
+				<input type="text" name="username" /><br />
+			<label for="password">Password:</label>
+				<input type="password" name="password" /><br />
+			<input type="submit" name="login_action" value="Login" />
+		</fieldset>
 	</form>
 	<script type="text/javascript">
 	document.getElementById("username").focus();

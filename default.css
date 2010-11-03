@@ -91,6 +91,10 @@ table tbody tr:hover {
 	background-color: #e0ffe0;
 }
 
+form#login table tbody tr:hover {
+	background-color: inherit;
+}
+
 table th {
 	background-color: #cfcfcf;
 	text-align: left;
@@ -321,6 +325,27 @@ table.tree .blob a.item_name{
 	padding: 0 0.5em;
 	margin: 0.5em;
 	font-size: 1.2em;
+}
+
+/* Login Form */
+#login fieldset {
+	border-style: none;
+	padding: 0;
+}
+
+#login fieldset label {
+	display: block;
+	float: left;
+	width: 8em;
+	margin: 3px 0;
+}
+
+#login fieldset input {
+	margin: 4px 0;
+}
+
+#login fieldset input[type="text"], #login fieldset input[type="password"] {
+	width: 12em;
 }
 
 /* Logout Plugin */
