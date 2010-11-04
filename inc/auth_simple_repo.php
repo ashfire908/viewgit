@@ -49,9 +49,26 @@ function auth_login_check($username, $password)
 
 function auth_check()
 {
-global $conf;
-global $page;
+    global $conf;
+    global $page;
 
+    // Setup session
+    if (isset($conf['session']))
+    {
+        // Session Name
+        if (isset($conf['session']['name']))
+        {
+            session_name($conf['session']['name']);
+        }
+        
+        // Cookie Settings
+        if (isset($conf['session']['lifetime'], $conf['session']['path'],
+                  $conf['session']['domain'], $conf['session']['secure']))
+        {
+            session_set_cookie_params($conf['session']['lifetime'], $conf['session']['path'],
+                                      $conf['session']['domain'], $conf['session']['secure']);
+        }
+    }
 	session_start();
 	
 	// Check if already signed in.

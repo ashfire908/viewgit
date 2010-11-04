@@ -89,6 +89,16 @@ $conf['ad'] = true;
 //$conf['auth_lib'] = 'simple';
 //$conf['auth_simple_users'] = array('test' => 'd7b58f27f98f47bacd60fa87efe822ba');
 
+// The simple and simple_repo auth libs have session settings avaiable. These
+// have a large impact on security. Uncomment the following to gain accesss to
+// them
+//$conf['session'] = array();
+//$conf['session']['name'] = 'ViewGit';
+//$conf['session']['lifetime'] = 0;
+//$conf['session']['path'] = '/';
+//$conf['session']['domain'] = 'example.com';
+//$conf['session']['secure'] = false;
+
 // Uncomment the following lines to authenticate using some drupal site's
 // config
 //$conf['auth_lib'] = 'drupal_user';
