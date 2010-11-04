@@ -32,6 +32,13 @@ if (!$conf['debug']) {
 	error_reporting(E_ALL ^ E_NOTICE);
 }
 
+// Find requested action
+$action = 'index';
+if (isset($_REQUEST['a'])) {
+	$action = strtolower($_REQUEST['a']);
+}
+$page['action'] = $action;
+
 if (isset($conf['auth_lib'])){
 	require_once("inc/auth_{$conf['auth_lib']}.php");
 	auth_check();
@@ -59,14 +66,8 @@ if (isset($conf['projects_glob'])) {
 	}
 }
 
-$action = 'index';
 $template = 'index';
 $page['title'] = 'ViewGit';
-
-if (isset($_REQUEST['a'])) {
-	$action = strtolower($_REQUEST['a']);
-}
-$page['action'] = $action;
 
 /*
  * index - list of projects
