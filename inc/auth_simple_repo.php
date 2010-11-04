@@ -26,8 +26,26 @@ Released under AGPLv3 or older.
 Developed by Topten Software (Brad Robinson) 
 http://www.toptensoftware.com
 
-Mod to support by-repo perms
+Modifications by Andrew Hampe to support by-repo perms
 */
+
+function auth_login_check($username, $password)
+{
+    global $conf;
+    
+    if (isset($conf['auth_simplerepo_users']))
+    {
+        foreach($conf['auth_simplerepo_users'] as $user => $data)
+        {
+            if (strtolower($user) == strtolower($username) and $data['password'] == $password)
+            {
+                $_SESSION['loginname']=$user;
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 function auth_check()
 {
@@ -36,26 +54,51 @@ global $page;
 
 	session_start();
 	
-	// Already signed in?
+	// Check if already signed in.
 	if (isset($_SESSION['loginname']))
 		return;
-
-	// Form submit?
+	
+	// Don't check login by default
+	$check_login=false;
+	
+    // Form submit
 	if (isset($_REQUEST['login_action']))
 	{
+	    // Form submit
 		$username=$_REQUEST['username'];
 		$password=md5($_REQUEST['password']);
-		if (isset($conf['auth_simple_users']))
-		{
-			foreach($conf['auth_simple_users'] as $user => $data)
-			{
-				if (strtolower($user) == strtolower($username) and $data['password'] == $password)
-				{
-					$_SESSION['loginname']=$user;
-					return;
-				}
-			}
-		}
+		// Check login
+		$check_login=true;
+	}
+    elseif ($page['action'] == 'rss-log')
+    {
+        // In case PHP is running as a CGI
+        list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
+          explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+        
+        // RSS feed
+        if (isset($_SERVER['PHP_AUTH_USER']) and $_SERVER['PHP_AUTH_USER'] != '')
+        {
+            $username=$_SERVER['PHP_AUTH_USER'];
+            $password=md5($_SERVER['PHP_AUTH_PW']);
+            // Check Login
+            $check_login=true;
+        }
+        else
+        {
+            // Let client know it can use HTTP auth.
+            header('HTTP/1.1 401 Unauthorized');
+            header('WWW-Authenticate: Basic realm="ViewGit"');
+        }
+    }
+	
+	if ($check_login)
+	{
+	    // Check if login is vaild
+		$verified = auth_login_check($username, $password);
+		if ($verified)
+		    return;
+		
 		if ($username=="md5")
 			$loginmessage="MD5: ".$password;
 		else
