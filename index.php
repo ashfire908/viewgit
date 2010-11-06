@@ -506,7 +506,7 @@ elseif ($action === 'viewblob') {
 		require_once($conf['geshi_path']);
 		$parts = explode('.', $page['path']);
 		$ext = array_pop($parts);
-		$geshi = new Geshi($page['data']);
+		$geshi = new Geshi($page['data'], '');
 		$lang = $geshi->get_language_name_from_extension($ext);
 		if (strlen($lang) > 0) {
 			$geshi->set_language($lang);
