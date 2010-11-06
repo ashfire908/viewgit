@@ -197,6 +197,17 @@ span.tag {
 	border-bottom: 1px solid #990;
 }
 
+/* index template */
+table a.project_allow {
+    padding-left: 20px;
+    background: url('images/silk/key.png') no-repeat 0 50%;
+}
+
+table a.project_deny {
+    padding-left: 20px;
+    background: url('images/silk/lock.png') no-repeat 0 50%;
+}
+
 /* summary template */
 
 table.shortlog th.date {

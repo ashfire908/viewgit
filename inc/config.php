@@ -104,6 +104,10 @@ $conf['ad'] = true;
 //$conf['auth_lib'] = 'drupal_user';
 //$conf['drupal_site_config'] = '/var/www/sites/default/settings.php';
 
+// You can display which repos users have access to by uncommenting the
+// following line
+//$conf['auth_show_access'] = true;
+
 // Which stylesheet to use
 $conf['style'] = 'default';
 
