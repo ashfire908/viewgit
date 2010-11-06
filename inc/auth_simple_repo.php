@@ -157,7 +157,7 @@ function auth_check()
 	die;
 }
 
-function auth_project($project)
+function auth_project($project, $return = false)
 {
 global $conf;
 global $page;
@@ -167,12 +167,28 @@ global $page;
         isset($conf['auth_simplerepo_users'][$username]['projects']) and
 	    in_array($project, $conf['auth_simplerepo_users'][$username]['projects']))
     {
-		// User has access to the project.
+        // User has access to the project.
+        
+        if ($return == true)
+        {
+            // Return whether or not the user has access
+            return true;
+        }
+		
+        // Return silently
 		return;
     }
     else 
     {
         // User does not have access to the project.
+        
+        if ($return == true)
+        {
+            // Return whether or not the user has access
+            return false;
+        }
+        
+        // Set page title
         $page['title'] = "Access Denied - ViewGit";
         
         // Set project name

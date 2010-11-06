@@ -155,7 +155,14 @@ function auth_check()
 }
 
 // Blank project access function
-function auth_project($project)
+function auth_project($project, $return = false)
 {
-    return;
+    if ($return == true)
+    {
+        return true;
+    }
+    else
+    {
+        return;
+    }
 }
