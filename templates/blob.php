@@ -21,7 +21,7 @@ else {
 <pre>
 <?php echo htmlspecialchars($page['data']); ?>
 </pre>
-</div>
 <?php
 }
 ?>
+</div>
