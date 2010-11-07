@@ -19,7 +19,6 @@ class MarkupPlugin extends VGPlugin
         $page['path'] = $_REQUEST['f'];
         $page['title'] = "$page[project] - Blob - ViewGit";
         if (isset($_REQUEST['hb'])) {
-            echo "Nope.";
             $page['commit_id'] = validate_hash($_REQUEST['hb']);
         }
         else {
@@ -43,15 +42,15 @@ class MarkupPlugin extends VGPlugin
             case 'markdown': // Markdown
                 include_once('markdown.php');
                 $page['html_data'] = Markdown($page['data']);
-                return;
+                break;
             case 'textile':  // Textile
                 include_once('textile.php');
                 $textile = new Textile();
                 $page['html_data'] = $textile->TextileThis($page['data']);
-                return;
+                break;
             default:
                 $page['html_data'] = $page['data'];
-                return;
+                break;
         }
         
         // Display page
@@ -66,7 +65,7 @@ class MarkupPlugin extends VGPlugin
         if ($type == 'pagenav') {
             global $page;
             if (($page['action'] == 'viewblob' or $page['action'] == 'render')
-                and !$this->match_file($page['path'])) {
+                and $this->match_file($page['path'])) {
                 $request = array('a' => 'render',
                                  'p' => $page['project'],
                                  'h' => $page['hash'],
