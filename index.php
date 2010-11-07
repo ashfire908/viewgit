@@ -490,15 +490,16 @@ elseif ($action === 'viewblob') {
 	}
 
 	// For the header's pagenav
-	$info = git_get_commit_info($page['project'], $page['commit_id']);
+	$info = git_get_commit_info($page['project'], $page['commit_id'], $page['path']);
 	$page['commit_id'] = $info['h'];
 	$page['tree_id'] = $info['tree'];
+	$page['lastlog'] = $info;
 
 	$page['pathinfo'] = git_get_path_info($page['project'], $page['commit_id'], $page['path']);
 
 	$page['data'] = fix_encoding(join("\n", run_git($page['project'], "cat-file blob $page[hash]")));
 
-	$page['lastlog'] = git_get_commit_info($page['project'], 'HEAD', $page['path']);
+	//$page['lastlog'] = git_get_commit_info($page['project'], 'HEAD', $page['path']);
 
 	// GeSHi support
 	if ($conf['geshi'] && strpos($page['path'], '.')) {
