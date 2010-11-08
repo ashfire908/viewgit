@@ -58,9 +58,66 @@ foreach ($page['parents'] as $parent) {
 
 <?php
 foreach ($page['affected_files'] as $details) {
+    if (isset($conf['commit_icons']) and $conf['commit_icons']) {
+        switch ($details['status']) {
+            case 'A': // Addition
+                $icon_class = 'commit_add';
+                break;
+            case 'C': // Copy
+                $icon_class = 'commit_copy';
+                break;
+            case 'D': // Delete
+                $icon_class = 'commit_delete';
+                break;
+            case 'M': // Modification
+                $icon_class = 'commit_edit';
+                break;
+            case 'R': // Renamed
+                $icon_class = 'commit_rename';
+                break;
+            case 'T': // Type Change
+                $icon_class = 'commit_type';
+                break;
+            case 'U': // Unmerged
+                $icon_class = 'commit_unmerge';
+                break;
+            case 'X': // Unknown
+            default:
+                $icon_class = 'commit_unknown';
+                break;
+	    }
+    }
+    $link_text = $details['file1'];
+    if ($details['status'] == 'C' or $details['status'] == 'R') {
+	    $link_text .= " <span class=\"commit_file2\">$details[file2]</span> ($details[score]%)";
+	}
 	echo "<tr><td>";
-	echo "<a href=\"" . makelink(array('a' => 'viewblob', 'p' => $page['project'], 'h' => $details['hash'], 'hb' => $page['commit_id'], 'f' => $details['name'])) . "\">$details[name]</a>";
-	echo "</td><td></td></tr>";
+	switch ($details['status']) {
+	    case 'A': // Addition
+	    case 'C': // Copy
+	    case 'M': // Modification
+	    case 'R': // Renamed
+	    case 'T': // Type Change
+	        // Link the text
+	        echo '<a href="' . makelink(array('a' => 'viewblob', 'p' => $page['project'], 'h' => $details['hash'], 'hb' => $page['commit_id'], 'f' => $details['file1'])) . '"';
+        	if (isset($conf['commit_icons']) and $conf['commit_icons']) {
+                echo " class=\"$icon_class\"";
+        	}
+        	echo ">$link_text</a>";
+        	break;
+	    case 'D': // Delete
+	    case 'U': // Unmerged
+	    case 'X': // Unknown
+	    default:
+	        // Don't link the text
+	        echo '<span';
+        	if (isset($conf['commit_icons']) and $conf['commit_icons']) {
+                echo " class=\"$icon_class\"";
+        	}
+        	echo ">$link_text</span>";
+        	break;
+	}
+	echo "</td></tr>";
 }
 ?>
 

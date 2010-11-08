@@ -131,23 +131,27 @@ function git_diffstat($project, $commit, $commit_base = null)
 function git_get_changed_paths($project, $hash = 'HEAD')
 {
 	$result = array();
-	$files = array();
-	$affected_files = run_git($project, "show --pretty=\"format:\" --name-only $hash");
 	
-	// Filter blank lines
-	foreach ($affected_files as $file) {
-		// The format above contains a blank line; Skip it.
-		if ($file == '') {
-			continue;
-		} else {
-		    $files[] = $file;
-		}
-	}
+	$output = run_git($project, "diff-tree -r $hash^1 $hash");
 	
-	$output = run_git($project, "ls-tree $hash " . implode(' ', $files));
-	foreach ($output as $line) {
-		$parts = preg_split('/\s+/', $line, 4);
-		$result[] = array('name' => $parts[3], 'hash' => $parts[2]);
+	foreach($output as $line) {
+	    if ($line == '') {
+	        continue;
+	    }
+	    $parts = preg_split('/\s+/', $line, 7);
+	    
+	    $data = array('file1' => $parts[5], 'file2' => null,
+	                  'hash' => $parts[3], 'score' => null);
+	    
+	    // Get data on the file
+	    $status = substr($parts[4], 0, 1);
+	    $data['status'] = $status;
+	    if ($status == 'C' or $status == 'R') {
+	        $data['score'] = (int) substr($parts[4], 1);
+	        $data['file2'] = $parts[6];
+	    }
+	    
+	    $result[] = $data;
 	}
     
 	return $result;
