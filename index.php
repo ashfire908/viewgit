@@ -274,7 +274,8 @@ elseif ($action === 'patch') {
 elseif ($action === 'rss-log') {
 	$page['project'] = validate_project($_REQUEST['p']);
 
-	$ext_url = 'http://'. $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) .'/';
+	$scheme = !isset($conf['uri_scheme'])? 'http' : $conf['uri_scheme'];
+	$ext_url = $scheme . '://'. $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) .'/';
 
 	$page['rss_title'] = "Log for $page[project]";
 	$page['rss_link'] = $ext_url . makelink(array('a' => 'summary', 'p' => $page['project']));
