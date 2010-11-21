@@ -40,11 +40,11 @@ class MarkupPlugin extends VGPlugin
         // Render file
         switch ($this->match_file($page['path'])) {
             case 'markdown': // Markdown
-                include_once('markdown.php');
+                include_once('renders/markdown.php');
                 $page['html_data'] = Markdown($page['data']);
                 break;
             case 'textile':  // Textile
-                include_once('textile.php');
+                include_once('renders/textile.php');
                 $textile = new Textile();
                 $page['html_data'] = $textile->TextileThis($page['data']);
                 break;
