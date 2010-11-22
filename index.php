@@ -76,6 +76,10 @@ if ($action === 'index') {
 	$template = 'index';
 	$page['title'] = 'List of projects - ViewGit';
 
+	if (isset($conf['auth_show_access']) and $conf['auth_show_access']) {
+	    $page['projects_auth'] = auth_projects_allowed();
+	}
+	
 	foreach (array_keys($conf['projects']) as $p) {
 		$page['projects'][] = get_project_info($p);
 	}

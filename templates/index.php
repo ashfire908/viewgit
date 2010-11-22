@@ -16,7 +16,7 @@ foreach ($page['projects'] as $p) {
 	echo "\t<td><a href=\"". makelink(array('a' => 'summary', 'p' => $p['name'])) ."\"";
 	if (isset($conf['auth_show_access']) and $conf['auth_show_access']) {
 	    echo ' class="';
-	    if (auth_project($p['name'], true)) {
+	    if (in_array($p['name'], $page['projects_auth'])) {
 	        echo 'project_allow'; // User has access to project
 	    } else {
 	        echo 'project_deny'; // User does not have access to the project

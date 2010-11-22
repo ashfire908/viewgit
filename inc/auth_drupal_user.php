@@ -67,12 +67,16 @@ function auth_check()
 // Blank project access function
 function auth_project($project, $return = false)
 {
-    if ($return == true)
-    {
+    if ($return == true) {
         return true;
-    }
-    else
-    {
+    } else {
         return;
     }
+}
+
+// Blank accessable projects function
+function auth_projects_allowed() {
+    global $conf;
+    
+    return array_keys($conf['projects']);
 }
