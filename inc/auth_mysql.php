@@ -42,6 +42,23 @@ function auth_project_check($uid, $project)
 {
     global $conf;
     
+    // Check if we already have it stored in the session
+    if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid) {
+        if (isset($_SESSION['authedprojects'])) {
+            // Check if we have a partial list of projects stored, and delete it
+            // if it exists
+            if (isset($_SESSION['authedpartial'])) {
+                unset($_SESSION['authedpartial']);
+            }
+            return in_array($project, $_SESSION['authedprojects']);
+        } elseif (isset($_SESSION['authedpartial'])) {
+            // Check the partial cache
+            if (key_exists($project, $_SESSION['authedpartial'])) {
+                return $_SESSION['authedpartial'][$project];
+            }
+        }
+    }
+    
     // Connect to database
     $db_connection = auth_dbconnect();
     if ($db_connection == false) { return false; }
@@ -54,13 +71,42 @@ function auth_project_check($uid, $project)
     $output = auth_dbquery($query, $db_connection);
 
     // Check access
-    if ($output != false and mysql_num_rows($output) == 1) { return true; }
+    if ($output != false) {
+        if (mysql_num_rows($output) == 1) {
+            // User has access
+            
+            // Store it in the session, if appropriate
+            if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid) {
+                $_SESSION['authedpartial'][$project] = true;
+            }
+            
+            return true;
+        } else {
+            // User does not have access
+            
+            // Store it in the session, if appropriate
+            if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid) {
+                $_SESSION['authedpartial'][$project] = false;
+            }
+        }
+    }
     return false;
 }
 
 function auth_projects_allowed_check($uid)
 {
     global $conf;
+    
+    // Check if we already have it stored in the session
+    if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid and
+        isset($_SESSION['authedprojects'])) {
+        // Check if we have a partial list of projects stored, and delete it
+        // if it exists
+        if (isset($_SESSION['authedpartial'])) {
+            unset($_SESSION['authedpartial']);
+        }
+        return $_SESSION['authedprojects'];
+    }
     
     // Connect to database
     $db_connection = auth_dbconnect();
@@ -78,6 +124,15 @@ function auth_projects_allowed_check($uid)
         while ($row = mysql_fetch_array ($output, MYSQL_ASSOC)) {
             $repos[] = $row['aut_repo_name'];
         }
+        // Store it in the session, if appropriate
+        if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid) {
+            $_SESSION['authedprojects'] = $repos;
+            // Check if we have a partial list of projects stored, and delete it
+            // if it exists
+            if (isset($_SESSION['authedpartial'])) {
+                unset($_SESSION['authedpartial']);
+            }
+        }
         return $repos;
     }
     return array();
@@ -86,7 +141,13 @@ function auth_projects_allowed_check($uid)
 function auth_user_type_check($uid)
 {
     global $conf;
-        
+    
+    // Check if we already have it stored in the session
+    if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid and
+        isset($_SESSION['logintype'])) {
+        return $_SESSION['logintype'];
+    }
+    
     // Connect to database
     $db_connection = auth_dbconnect();
     if ($db_connection == false) { return false; }
@@ -101,9 +162,12 @@ function auth_user_type_check($uid)
     // Get user type
     if (mysql_num_rows($output) == 1) {
         $data = mysql_fetch_array($output, MYSQL_ASSOC);
-        if ($data['usr_pass'] == $password) {
-            return $data['usr_type'];
+        
+        // Store it in the session, if appropriate
+        if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid) {
+            $_SESSION['logintype'] = $data['usr_type'];
         }
+        return $data['usr_type'];
     }
     return false;
 }
@@ -129,27 +193,29 @@ function auth_check()
     }
     
     // Start session
-	session_start();
-	
-	// Check if already signed in.
-	if (isset($_SESSION['loginname'])) {
-		return;
-	}
-	
-	// Don't check login by default
-	$check_login = false;
-	
+    session_start();
+    
+    // Check if already signed in.
+    if (isset($_SESSION['loginname'])) {
+        return;
+    }
+    
+    // Don't check login by default
+    $check_login = false;
+    
     // Form submit
-	if (isset($_REQUEST['login_action'])) {
-	    // Form submit
-		$username = $_REQUEST['username'];
-		$password = md5($_REQUEST['password']);
-		// Check login
-		$check_login = true;
-	} elseif ($page['action'] == 'rss-log') {
-        // In case PHP is running as a CGI
-        list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
-          explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+    if (isset($_REQUEST['login_action'])) {
+        // Form submit
+        $username = $_REQUEST['username'];
+        $password = md5($_REQUEST['password']);
+        // Check login
+        $check_login = true;
+    } elseif ($page['action'] == 'rss-log') {
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            // PHP is running as a CGI
+            list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
+              explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+        }
         
         // RSS feed
         if (isset($_SERVER['PHP_AUTH_USER']) and $_SERVER['PHP_AUTH_USER'] != '') {
@@ -163,28 +229,28 @@ function auth_check()
             header('WWW-Authenticate: Basic realm="ViewGit"');
         }
     }
-	
-	if ($check_login) {
-	    // Check if login is vaild
-		list($verified, $user, $uid) = auth_login_check($username, $password);
-		if ($verified) {
-		    $_SESSION['loginname'] = $user;
-		    $_SESSION['loginid'] = $uid;
-		    return;
-		}
-		
-		if ($username == "md5") {
-			$loginmessage = "MD5: ".$password;
-		} else {
-			$loginmessage = "Login Failed";
-		}
-	}
+    
+    if ($check_login) {
+        // Check if login is vaild
+        list($verified, $user, $uid) = auth_login_check($username, $password);
+        if ($verified) {
+            $_SESSION['loginname'] = $user;
+            $_SESSION['loginid'] = $uid;
+            return;
+        }
+        
+        if ($username == "md5") {
+            $loginmessage = "MD5: ".$password;
+        } else {
+            $loginmessage = "Login Failed";
+        }
+    }
 
-	$page['title']="Login - ViewGit";
+    $page['title']="Login - ViewGit";
 
 
-	// Not signed in, display login page
-	require('templates/header.php');
+    // Not signed in, display login page
+    require('templates/header.php');
 ?>
 	<h2>Login Required</h2>
 <?php if (isset($loginmessage)):?>
@@ -204,8 +270,8 @@ function auth_check()
 	</script>
 
 <?php
-	require('templates/footer.php');	
-	die;
+    require('templates/footer.php');
+    die;
 }
 
 function auth_project($project, $return = false)
@@ -221,9 +287,9 @@ function auth_project($project, $return = false)
             // Return whether or not the user has access
             return true;
         }
-		
+        
         // Return silently
-		return;
+        return;
     } else {
         // User does not have access to the project.
         if ($return == true) {
@@ -240,13 +306,13 @@ function auth_project($project, $return = false)
         }
         
         // Display error page
-	    require('templates/header.php');
-	    ?>
+        require('templates/header.php');
+        ?>
 	<h2>Access Denied</h2>
 	<p style="border:1px solid red; padding:2px; background:#f77;">You do not have access to the '<?php echo htmlspecialchars($project)?>' project.</p>
 <?php
-	    require('templates/footer.php');	
-	    die;
+        require('templates/footer.php');
+        die;
     }
 }
 
@@ -316,5 +382,29 @@ function auth_dbquery($query, $db_connection)
         return false;
     } else {
         return $query_output;
+    }
+}
+
+function auth_cache_purge($uid)
+{
+    if (isset($_SESSION['loginid']) and $_SESSION['loginid'] == $uid) {
+        // Clear cached data
+        unset($_SESSION['authedprojects']);
+        unset($_SESSION['authedpartial']);
+        unset($_SESSION['logintype']);
+        // Reload user name
+        // Connect to database
+        $db_connection = auth_dbconnect();
+        if ($db_connection == false) { return false; }
+        // Lookup name
+        $quid = mysql_real_escape_string($uid, $db_connection);
+        $query = 'SELECT `usr_name` FROM `users`' .
+                 " WHERE `usr_id` = $quid";
+        $result = auth_dbquery($query, $db_connection);
+        if ($result == false) { return false; }
+        if (mysql_num_rows($result) == 1) {
+            $data = mysql_fetch_assoc($result);
+            $_SESSION['loginname'] = $data['usr_name'];
+        }
     }
 }
