@@ -45,7 +45,9 @@ class LogoutPlugin extends VGPlugin
         if ($type == 'nav' and isset($_SESSION['loginname'])) {
             $this->output('<div id="logout">Logged in as ' . $_SESSION['loginname'] .
                           '. <a href="' . makelink(array('a' => 'logout')) .
-                          '" title="Logout">Logout</a></div>');
+                          '" title="Logout">Logout</a>');
+            VGPlugin::call_hooks('plugin_logout');
+            $this->output('</div>');
         }
     }
 }
