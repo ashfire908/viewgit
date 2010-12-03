@@ -94,7 +94,7 @@ function get_project_info($name)
 		$info['description'] = file_get_contents($info['repo'] .'/description');
 	}
 
-	$headinfo = git_get_commit_info($name, 'HEAD');
+	$headinfo = git_get_commit_info($name, '--all');
 	$info['head_stamp'] = $headinfo['author_utcstamp'];
 	$info['head_datetime'] = gmstrftime($conf['datetime'], $headinfo['author_utcstamp']);
 	$info['head_hash'] = $headinfo['h'];
