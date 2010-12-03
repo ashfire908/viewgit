@@ -232,6 +232,19 @@ function git_get_commit_info($project, $hash = 'HEAD', $path = null)
 }
 
 /**
+ * Get branches for a commit.
+ */
+function git_get_commit_branch($project, $hash) {
+	$output = run_git($project, 'branch --contains ' . $hash);
+
+	$branches = array();
+	foreach($output as $line) {
+		$branches[] = ltrim($line, ' *');
+	}
+	return $branches;
+}
+
+/**
  * Get list of heads (branches) for a project.
  */
 function git_get_heads($project)
@@ -526,6 +539,7 @@ function rss_item_format($format, $info)
 		'/{COMMITTER}/',
 		'/{COMMITTER_MAIL}/',
 		'/{DIFFSTAT}/',
+		'/{BRANCHES}/',
 	), array(
 		htmlentities_wrapper($info['author_name']),
 		htmlentities_wrapper($info['author_mail']),
@@ -534,6 +548,7 @@ function rss_item_format($format, $info)
 		htmlentities_wrapper($info['committer_name']),
 		htmlentities_wrapper($info['committer_mail']),
 		htmlentities_wrapper(isset($info['diffstat']) ? $info['diffstat'] : ''),
+		htmlentities_wrapper(isset($info['branches']) ? implode(', ', $info['branches']) : ''),
 	), $format);
 }
 

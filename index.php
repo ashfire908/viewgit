@@ -287,9 +287,10 @@ elseif ($action === 'rss-log') {
 
 	$diffstat = strstr($conf['rss_item_description'], '{DIFFSTAT}');
 
-	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items']);
+	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items'], '--all');
 	foreach ($revs as $rev) {
 		$info = git_get_commit_info($page['project'], $rev);
+		$info['branches'] = git_get_commit_branch($page['project'], $rev);
 		$link = $ext_url . makelink(array('a' => 'commit', 'p' => $page['project'], 'h' => $rev));
 		if ($diffstat) {
 			$info['diffstat'] = git_diffstat($page['project'], $rev);
