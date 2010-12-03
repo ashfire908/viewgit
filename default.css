@@ -364,3 +364,55 @@ table.tree .blob a.item_name{
 .nav #logout a:hover {
     text-decoration: underline;
 }
+
+/* User Admin */
+dl.viewuser dt {
+    float: left;
+    clear: left;
+    width: 5em;
+}
+
+dl.viewuser dd {
+    float: left;
+}
+
+/* User Form */
+form.user_settings fieldset {
+    border-style: none;
+    padding: 0;
+}
+
+form.user_settings fieldset input {
+	vertical-align: middle;
+}
+
+/* Two column forms */
+fieldset.two_column label, fieldset.two_column .label_inline {
+    display: block;
+    float: left;
+    width: 8em;
+    margin: 4px 0;
+}
+
+fieldset.two_column label.field_inline {
+    display: inline;
+    margin-left: 0;
+    width: auto;
+}
+
+fieldset.two_column input {
+    margin: 4px 0;
+    vertical-align: middle;
+}
+
+fieldset.two_column select {
+    margin: 3px 0;
+}
+
+fieldset.two_column input[type="text"], fieldset.two_column input[type="password"] {
+    width: 12em;
+}
+
+fieldset.two_column br {
+    clear: left;
+}
