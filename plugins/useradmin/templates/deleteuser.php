@@ -11,5 +11,5 @@ global $page;
 <?php } else { ?>
   <p>User '<?php echo $page['userinfo']['name']?>' (ID <?php echo $page['userinfo']['id']; ?>) has been deleted.</p>
   
-  <p><a href="<?php echo makelink(array('a' => 'admin', 'm' => 'userlist')); ?>" title="Return to userlist">Back to userlist</a></p>
+  <p><a href="<?php echo makelink(array('a' => 'admin', 'm' => 'userlist')); ?>" title="Return to userlist" class="userlist">Back to userlist</a></p>
 <?php }

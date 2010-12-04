@@ -376,6 +376,55 @@ dl.viewuser dd {
     float: left;
 }
 
+a.user_view, a.user_add, a.user_edit, a.user_auth,
+a.user_delete, .user, .user_admin, .user_disabled,
+a.userlist {
+    padding-left: 20px;
+    background-repeat: no-repeat;
+    background-position: 0 50%;
+}
+
+table.userlist a.user_view, table.userlist a.user_edit,
+table.userlist a.user_auth, table.userlist a.user_delete {
+    padding-top: 16px;
+    padding-left: 0px;
+    height: 0px;
+    width: 22px;
+    overflow: hidden;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+a.userlist {
+    background-image: url('images/silk/report_user.png');
+}
+a.user_view {
+    background-image: url('images/silk/user.png');
+}
+a.user_add {
+    background-image: url('images/silk/user_add.png');
+}
+a.user_edit {
+    background-image: url('images/silk/user_edit.png');
+}
+a.user_auth {
+    background-image: url('images/silk/key.png');
+}
+a.user_delete {
+    background-image: url('images/silk/user_delete.png');
+}
+
+.user {
+    background-image: url('images/silk/user.png');
+}
+.user_admin {
+    background-image: url('images/silk/user_suit.png');
+}
+.user_disabled {
+    background-image: url('images/silk/user_gray.png');
+}
+
 /* User Form */
 form.user_settings fieldset {
     border-style: none;

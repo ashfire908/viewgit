@@ -21,8 +21,8 @@ foreach($page['authinfo'] as $project => $enabled) {
   </form>
   
   <p>
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'userlist')); ?>" title="Return to userlist">Back to userlist</a> -
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'viewuser', 'id' => $page['userinfo']['id'])); ?>" title="View user '<?php echo $page['userinfo']['name']; ?>'">View user</a> -
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'edituser', 'id' => $page['userinfo']['id'])); ?>" title="Edit user '<?php echo $page['userinfo']['name']; ?>'">Edit user</a> -
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'deleteuser', 'id' => $page['userinfo']['id'])); ?>" title="Delete user '<?php echo $page['userinfo']['name']; ?>'">Delete user</a>
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'userlist')); ?>" title="Return to userlist" class="userlist">Back to userlist</a> -
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'viewuser', 'id' => $page['userinfo']['id'])); ?>" title="View user '<?php echo $page['userinfo']['name']; ?>'" class="user_view">View user</a> -
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'edituser', 'id' => $page['userinfo']['id'])); ?>" title="Edit user '<?php echo $page['userinfo']['name']; ?>'" class="user_edit">Edit user</a> -
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'deleteuser', 'id' => $page['userinfo']['id'])); ?>" title="Delete user '<?php echo $page['userinfo']['name']; ?>'" class="user_delete">Delete user</a>
   </p>

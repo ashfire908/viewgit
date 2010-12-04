@@ -7,11 +7,11 @@ if ($page['userinfo']['success'] == true) { ?>
   <p>User '<?php echo $page['userinfo']['name']; ?>' has successfully been created.</p>
   
   <p>
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'userlist')); ?>" title="Return to userlist">Back to userlist</a> -
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'viewuser', 'id' => $page['userinfo']['id'])); ?>" title="View user '<?php echo $page['userinfo']['name']; ?>'">View user</a> -
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'edituser', 'id' => $page['userinfo']['id'])); ?>" title="Edit user '<?php echo $page['userinfo']['name']; ?>'">Edit user</a> -
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'editauth', 'id' => $page['userinfo']['id'])); ?>" title="Edit user '<?php echo $page['userinfo']['name']; ?>' authorized projects">Edit authorized projects</a> -
-     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'deleteuser', 'id' => $page['userinfo']['id'])); ?>" title="Delete user '<?php echo $page['userinfo']['name']; ?>'">Delete user</a>
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'userlist')); ?>" title="Return to userlist" class="userlist">Back to userlist</a> -
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'viewuser', 'id' => $page['userinfo']['id'])); ?>" title="View user '<?php echo $page['userinfo']['name']; ?>'" class="user_view">View user</a> -
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'edituser', 'id' => $page['userinfo']['id'])); ?>" title="Edit user '<?php echo $page['userinfo']['name']; ?>'" class="user_edit">Edit user</a> -
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'editauth', 'id' => $page['userinfo']['id'])); ?>" title="Edit user '<?php echo $page['userinfo']['name']; ?>' authorized projects" class="user_auth">Edit authorized projects</a> -
+     <a href="<?php echo makelink(array('a' => 'admin', 'm' => 'deleteuser', 'id' => $page['userinfo']['id'])); ?>" title="Delete user '<?php echo $page['userinfo']['name']; ?>'" class="user_delete">Delete user</a>
   </p>
 <?php } else {
     if ($page['userinfo']['error'] != '') {
