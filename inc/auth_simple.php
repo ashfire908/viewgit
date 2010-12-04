@@ -79,9 +79,11 @@ function auth_check()
 		// Check login
 		$check_login = true;
 	} elseif ($page['action'] == 'rss-log') {
-        // In case PHP is running as a CGI
-        list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
-          explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+	    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            // PHP is running as a CGI
+            list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
+              explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+        }
         
         // RSS feed
         if (isset($_SERVER['PHP_AUTH_USER']) and $_SERVER['PHP_AUTH_USER'] != '') {

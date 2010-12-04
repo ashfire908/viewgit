@@ -24,6 +24,11 @@ function auth_check()
 {
 	global $conf;
 	global $db_url, $db_prefix;
+    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // PHP is running as a CGI
+        list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) =
+          explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+    }
 	@$login_user = $_SERVER['PHP_AUTH_USER'];
 	@$login_pass = $_SERVER['PHP_AUTH_PW'];
 
