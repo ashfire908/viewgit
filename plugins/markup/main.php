@@ -30,12 +30,13 @@ class MarkupPlugin extends VGPlugin
         $info = git_get_commit_info($page['project'], $page['commit_id']);
         $page['commit_id'] = $info['h'];
         $page['tree_id'] = $info['tree'];
+        $page['lastlog'] = $info;
         
         $page['pathinfo'] = git_get_path_info($page['project'], $page['commit_id'], $page['path']);
         
         $page['data'] = fix_encoding(join("\n", run_git($page['project'], "cat-file blob $page[hash]")));
         
-        $page['lastlog'] = git_get_commit_info($page['project'], 'HEAD', $page['path']);
+        //$page['lastlog'] = git_get_commit_info($page['project'], 'HEAD', $page['path']);
         
         // Render file
         switch ($this->match_file($page['path'])) {
@@ -69,6 +70,7 @@ class MarkupPlugin extends VGPlugin
                 $request = array('a' => 'render',
                                  'p' => $page['project'],
                                  'h' => $page['hash'],
+                                 'hb' => $page['commit_id'],
                                  'f' => $page['path']);
                 
                 $page['links']['Render'] = $request;
