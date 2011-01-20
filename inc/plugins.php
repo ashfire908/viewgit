@@ -60,6 +60,13 @@ class VGPlugin
 	 * pagenav - $page['links'] can be modified to add more pagenav links, see templates/header.php
 	 */
 	function hook($type) {}
+	
+	/**
+	 * Called when a registered data hook is triggered.
+	 * 
+	 * Data Hooks:
+	 */
+	function data_hook($type, &$data) {}
 
 	/**
 	 * Can be used to output xhtml.
@@ -88,10 +95,14 @@ class VGPlugin
 	 * Call plugin hooks of given type.
 	 * @see VGPlugin::register_hook()
 	 */
-	static function call_hooks($type) {
+	static function call_hooks($type, &$data=null) {
 		if (in_array($type, array_keys(self::$plugin_hooks))) {
 			foreach (self::$plugin_hooks[$type] as $class) {
-				$class->hook($type);
+				if (is_null($data)) {
+				    $class->hook($type);
+				} else {
+					$class->data_hook($type, $data);
+				}
 			}
 		}
 	}
