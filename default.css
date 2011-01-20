@@ -60,6 +60,15 @@ a.patch_link {
 	background: url('images/silk/page_white_code_red.png') no-repeat 50% 50%;
 }
 
+a.render_link {
+	padding-top: 16px;
+	height: 0px;
+	width: 22px;
+	overflow: hidden;
+	display: inline-block;
+	background: url('images/silk/page.png') no-repeat 50% 50%;
+}
+
 h1 {
 	font-size: 130%;
 }

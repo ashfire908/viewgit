@@ -93,7 +93,8 @@ class MarkupPlugin extends VGPlugin
                                          'h' => $data['hash'],
                                          'hb' => $page['commit_id'],
                                          'f' => $data['file1'])) .
-                                         '" class="render">render</a>';
+                                         '" class="render_link" '.
+                                         'title="Render">render</a>';
                 }
                 break;
             case 'treeitem_post':
@@ -105,7 +106,8 @@ class MarkupPlugin extends VGPlugin
                                          'h' => $data['hash'],
                                          'hb' => $page['commit_id'],
                                          'f' => $data['path'])) .
-                                         '" class="render">render</a>';
+                                         '" class="render_link" ' .
+                                         'title="Render">render</a>';
                 }
                 break;
         }
