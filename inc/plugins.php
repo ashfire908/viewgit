@@ -65,6 +65,8 @@ class VGPlugin
 	 * Called when a registered data hook is triggered.
 	 * 
 	 * Data Hooks:
+	 * commitfile_pre - commit file before defaults are applied
+	 * commitfile_post - commit file after defaults are applied
 	 */
 	function data_hook($type, &$data) {}
 

@@ -214,6 +214,10 @@ table.heads th.date {
 
 /* commit template */
 
+table.filelist th.actions {
+	width: 10%;
+}
+
 .filelist .commit_add {
     padding-left: 20px;
     background: url('images/silk/page_white_add.png') no-repeat 0 50%;

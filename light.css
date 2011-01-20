@@ -146,6 +146,12 @@ table.heads th.date {
 .cdiff_link:before, .patch_link:before { content: '['; }
 .cdiff_link:after, .patch_link:after { content: ']'; }
 
+/* commit template */
+
+table.filelist th.actions {
+    width: 10%;
+}
+
 /* commitdiff template */
 
 .commitmessage {
