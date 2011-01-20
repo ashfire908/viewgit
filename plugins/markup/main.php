@@ -7,6 +7,8 @@ class MarkupPlugin extends VGPlugin
         if (isset($conf['markup'])) {
             $this->register_action('render');
             $this->register_hook('pagenav');
+            $this->register_hook('commitfile_post');
+            $this->register_hook('treeitem_post');
         }
     }
 
@@ -63,18 +65,49 @@ class MarkupPlugin extends VGPlugin
     }
 
     function hook($type) {
-        if ($type == 'pagenav') {
-            global $page;
-            if (($page['action'] == 'viewblob' or $page['action'] == 'render')
-                and $this->match_file($page['path'])) {
-                $request = array('a' => 'render',
-                                 'p' => $page['project'],
-                                 'h' => $page['hash'],
-                                 'hb' => $page['commit_id'],
-                                 'f' => $page['path']);
-                
-                $page['links']['Render'] = $request;
-            }
+        switch ($type) {
+            case 'pagenav':
+                global $page;
+                if (($page['action'] == 'viewblob' or $page['action'] == 'render')
+                    and $this->match_file($page['path'])) {
+                    $request = array('a' => 'render',
+                                     'p' => $page['project'],
+                                     'h' => $page['hash'],
+                                     'hb' => $page['commit_id'],
+                                     'f' => $page['path']);
+                    $page['links']['Render'] = $request;
+                }
+                break;
+        }
+    }
+    
+    function data_hook($type, &$data) {
+        switch ($type) {
+            case 'commitfile_post':
+                global $page;
+                if ($data['link_text'] and
+                    $this->match_file(end(explode('/', $data['file1'])))) {
+                    $data['actions'][] = '<a href="' . makelink(array(
+                                         'a' => 'render',
+                                         'p' => $page['project'],
+                                         'h' => $data['hash'],
+                                         'hb' => $page['commit_id'],
+                                         'f' => $data['file1'])) .
+                                         '" class="render">render</a>';
+                }
+                break;
+            case 'treeitem_post':
+                global $page;
+                if ($data['type'] === 'blob' and $this->match_file($data['name'])) {
+                    $data['actions'][] = '<a href="' . makelink(array(
+                                         'a' => 'render',
+                                         'p' => $page['project'],
+                                         'h' => $data['hash'],
+                                         'hb' => $page['commit_id'],
+                                         'f' => $data['path'])) .
+                                         '" class="render">render</a>';
+                }
+                break;
         }
     }
     
