@@ -67,6 +67,8 @@ class VGPlugin
 	 * Data Hooks:
 	 * commitfile_pre - commit file before defaults are applied
 	 * commitfile_post - commit file after defaults are applied
+	 * treeitem_pre - tree item before defaults are applied
+	 * treeitem_post - tree item after defaults are applied
 	 */
 	function data_hook($type, &$data) {}
 

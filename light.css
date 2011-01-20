@@ -180,6 +180,10 @@ table.tree th.perm {
 	width: 10%;
 }
 
+table.tree th.actions {
+    width: 10%;
+}
+
 table.tree th.dl {
 	width: 10%;
 }
