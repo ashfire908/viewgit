@@ -1,13 +1,13 @@
 <?php
 // Comment class file
 
-// Requires markdown
-require_once('markdown.php');
-
 // Comment class
 class Comment {
     function __construct() {
-        // Initliaze properties
+    	// Requires markdown (load on first use)
+    	require_once('inc/renders/markdown.php');
+    	
+        // Initialize properties
         $this->user = new CommentUser();
         $this->posted = new DateTime();
         $this->edited = new DateTime();
