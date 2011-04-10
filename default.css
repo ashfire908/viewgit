@@ -378,7 +378,7 @@ dl.viewuser dd {
 
 a.user_view, a.user_add, a.user_edit, a.user_auth,
 a.user_delete, .user, .user_admin, .user_disabled,
-a.userlist {
+a.userlist, a.user_settings, a.change_pass {
     padding-left: 20px;
     background-repeat: no-repeat;
     background-position: 0 50%;
@@ -413,6 +413,12 @@ a.user_auth {
 }
 a.user_delete {
     background-image: url('images/silk/user_delete.png');
+}
+a.user_settings {
+    background-image: url('images/silk/user.png');
+}
+a.change_pass {
+    background-image: url('images/silk/key.png');
 }
 
 .user {

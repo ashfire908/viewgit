@@ -16,6 +16,7 @@ class UserAdminPlugin extends VGPlugin {
                 die('User Admin Plugin requires the logout plugin to be enabled.');
             }
             $this->register_action('admin');
+            $this->register_action('user');
             $this->register_hook('plugin_logout');
         }
     }
@@ -32,6 +33,9 @@ class UserAdminPlugin extends VGPlugin {
         switch ($action) {
             case 'admin':
                 $this->action_user_admin();
+                break;
+            case 'user':
+                $this->action_user_settings();
                 break;
         }
     }
@@ -216,6 +220,9 @@ class UserAdminPlugin extends VGPlugin {
             case 'admin':
                 $this->page['useradmin']['errors'][] = $message;
                 break;
+            case 'settings':
+                $this->page['usersettings']['errors'][] = $message;
+                break;
         }
     }
     
@@ -224,6 +231,9 @@ class UserAdminPlugin extends VGPlugin {
         switch ($mode) {
             case 'admin':
                 $this->page['useradmin']['messages'][] = $message;
+                break;
+            case 'settings':
+                $this->page['usersettings']['messages'][] = $message;
                 break;
         }
     }
@@ -494,6 +504,37 @@ class UserAdminPlugin extends VGPlugin {
         return $users;
     }
     
+    // Change password
+    private function change_password($uid, $old_password, $new_password) {
+        // Quote input
+        $uid = $this->db_quote($uid);
+        $new_password = $this->db_quote($new_password);
+        
+        // Verify old password
+        $query = 'SELECT `usr_pass` FROM `users` ' .
+                 "WHERE `usr_id` = $uid";
+        $result = $this->db_query($query);
+        if ($result == false) { $this->error_mysql_query(); }
+        
+        // Check old password against stored password, return false on no match
+        if (mysql_num_rows($result) != 1) {
+            return false;
+        } else {
+            $data = mysql_fetch_assoc($result);
+            if ($data['usr_pass'] != $old_password) {
+                return false;
+            }
+        }
+        
+        // Old password matches, update stored password with new password
+        $query = "UPDATE `users` SET `usr_pass` = '$new_password' " .
+                 "WHERE `usr_id` = $uid";
+        $result = $this->db_query($query);
+        if ($result == false) { $this->error_mysql_query(); }
+        
+        return true;
+    }
+    
     // Event - Add user
     private function event_add_user() {
         // Check for a submitted form
@@ -720,6 +761,62 @@ class UserAdminPlugin extends VGPlugin {
         $this->display_plugin_template('admin/userlist', true);
     }
     
+    // Event - Show Settings
+    private function event_show_settings() {
+        // Get the user id
+        $uid = $_SESSION['loginid'];
+        
+        // Get user
+        $this->page['user'] = $this->get_user($uid);
+
+        // Display page
+        $this->page['title'] = 'User Settings - ViewGit';
+        $this->display_plugin_template('settings/showsettings', true);
+    }
+    
+    // Event - Change Password
+    private function event_change_password() {
+        // Get the user id
+        $uid = $_SESSION['loginid'];
+        
+        // Check for a submitted form
+        $submission = $this->get_param('submit_pass');
+        if ($submission !== false) {
+            // Form submitted.
+            $abort = false;
+            
+            // Check we have the fields, filter stuff
+            // Old Password
+            $old_password = $this->get_param('old_password', array($this, 'hash_pass'));
+            if ($old_password === false) {
+                $abort = true;
+                $this->add_error('The old password was not given.', 'settings');
+            }
+            // New Password
+            $new_password = $this->get_param('password', array($this, 'hash_pass'));
+            if ($new_password === false or $new_password != $this->get_param('password_confirm', array($this, 'hash_pass'))) {
+                $abort = true;
+                $this->add_error('Passwords do not match or are missing.', 'settings');
+            }
+            
+            // Change password
+            if (!$abort) {
+                // Change password
+                if ($this->change_password($uid, $old_password, $new_password)) {
+                    // Mark success
+                    $this->page['usersettings']['confirm'] = true;
+                } else {
+                    // Display error
+                    $this->add_error('Old password given does not match the current password.', 'settings');
+                }
+            }
+        }
+
+        // Display page
+        $this->page['title'] = 'Change Password - User Settings - ViewGit';
+        $this->display_plugin_template('settings/changepass', true);
+    }
+    
     // Action - User Admin
     private function action_user_admin() {
         // Check if the user is authorized
@@ -782,12 +879,57 @@ class UserAdminPlugin extends VGPlugin {
         }
     }
     
+    // Action - User Settings
+    private function action_user_settings() {
+        // Setup page
+        $this->page['title'] = 'User Settings - ViewGit';
+        $this->page['subtitle'] = 'User Settings';
+
+        // Check for mode
+        $mode = $this->get_param('m', 'strtolower');
+        if ($mode === false) {
+            $mode = 'show';
+        }
+        
+        // Setup page variables
+        $this->page['usersettings'] = array();
+        $this->page['usersettings']['errors'] = array();
+        $this->page['usersettings']['messages'] = array();
+        $this->page['usersettings']['success'] = false;
+        $this->page['usersettings']['confirm'] = false;
+        
+        // Connect to the database
+        if (!$this->db_connect()) {
+            $this->error_mysql_connect();
+        }
+        
+        // Hand off to the method for the mode given
+        switch($mode) {
+            case 'show':
+                // Show settings
+                $this->event_show_settings();
+                break;
+            case 'changepass':
+                // View user
+                $this->event_change_password();
+                break;
+            default:
+                // Display error message
+                $this->error_unknown_mode();
+                break;
+        }
+    }
+    
     // Hook - Logout plugin
     private function hook_plugin_logout() {
         switch (auth_user_type()) {
             case 'admin':
                 $this->output(' <a href="' . makelink(array('a' => 'admin')) .
                               '" title="User Administration">Admin</a> ');
+                break;
+            case 'standard':
+                $this->output(' <a href="' . makelink(array('a' => 'user')) .
+                              '" title="User Settings">Settings</a> ');
                 break;
         }
     }
