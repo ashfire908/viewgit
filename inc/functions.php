@@ -645,12 +645,15 @@ function vg_error_handler($errno, $errstr, $errfile, $errline)
 
 	switch ($errno) {
 		case E_ERROR:
+		case E_USER_ERROR:
 			$class = 'error';
 			break;
 		case E_WARNING:
+		case E_USER_WARNING:
 			$class = 'warning';
 			break;
 		case E_NOTICE:
+		case E_USER_NOTICE:
 		case E_STRICT:
 		default:
 			$class = 'info';
