@@ -166,10 +166,10 @@ class CommentPlugin extends VGPlugin {
         $id = (int) $id;
         
         // Lookup comments
-        $query = 'SELECT `com`.`com_user_id` AS `usr_id`, `com`.`com_project`, ' .
-                 '`com`.`com_commit`, `com`.`com_posted_date`, `com`.`com_edited_date`, ' .
-                 '`com`.`com_text`, `usr`.`usr_name`, `usr`.`usr_type` FROM `comments` AS `com` ' .
+        $query = 'SELECT `com`.`com_user_id`, `com`.`com_project`, `com`.`com_commit`, `com`.`com_posted_date`, `com`.`com_edit_count`, `com`.`com_edit_date`, `com`.`com_edit_user`, `com`.`com_text`, `usr`.`usr_name` AS `author_name`, `usr`.`usr_type` AS `author_type`, `usr_e`.`usr_name` AS `editor_name`, `usr_e`.`usr_type` AS `editor_type` ' .
+                 'FROM `comments` AS `com` ' .
                  'INNER JOIN `users` AS `usr` ON `com`.`com_user_id` = `usr`.`usr_id` ' .
+                 'INNER JOIN `users` AS `usr_e` ON `com`.`com_edit_user` = `usr_e`.`usr_id` ' .
                  "WHERE `com`.`com_id` = $id";
         $result = $this->db_query($query);
         // TODO: Handle this with an error message
@@ -182,7 +182,8 @@ class CommentPlugin extends VGPlugin {
         $project = $this->db_quote($data['com_project']);
         $commit = $this->db_quote($data['com_commit']);
         // Lookup position in the comments
-        $query = 'SELECT `com`.`com_id` FROM `comments` AS `com` ' .
+        $query = 'SELECT `com`.`com_id` ' .
+                 'FROM `comments` AS `com` ' .
                  "WHERE `com`.`com_project` = '$project' AND `com`.`com_commit` = '$commit' " .
                  'ORDER BY `com`.`com_id`';
         $result = $this->db_query($query);
@@ -202,29 +203,34 @@ class CommentPlugin extends VGPlugin {
         $comment = new Comment();
         $comment->id = $id;
         $comment->num = $cur_comment;
-        $comment->user->id = (int) $data['usr_id'];
-        $comment->user->name = $data['usr_name'];
-        $comment->user->type = $data['usr_type'];
+        $comment->author->id = (int) $data['com_user_id'];
+        $comment->author->name = $data['author_name'];
+        $comment->author->type = $data['author_type'];
         $comment->project = $data['com_project'];
         $comment->commit = $data['com_commit'];
         $comment->posted = new DateTime($data['com_posted_date']);
-        $comment->edited = new DateTime($data['com_edited_date']);
+        $comment->edit->count = (int) $data['com_edit_count'];
+        $comment->edit->date = new DateTime($data['com_edit_date']);
+        $comment->edit->author->id = (int) $data['com_edit_user'];
+        $comment->edit->author->name = $data['editor_name'];
+        $comment->edit->author->type = $data['editor_type'];
         $comment->text = $data['com_text'];
         $comment->render_comment();
         
         return $comment;
     }
     
-    // Get comments (by hash)
+    // Get comments (by project and hash)
     private function get_comments($project, $hash) {
         // Quote input
         $project = $this->db_quote($project);
         $hash = $this->db_quote($hash);
         
         // Lookup comments
-        $query = 'SELECT `com`.`com_id`, `com`.`com_user_id` AS `usr_id`, `com`.`com_posted_date`, ' .
-                 '`com`.`com_edited_date`, `com`.`com_text`, `usr`.`usr_name`, `usr`.`usr_type` ' .
-                 'FROM `comments` AS `com` INNER JOIN `users` AS `usr` ON `com`.`com_user_id` = `usr`.`usr_id` ' .
+        $query = 'SELECT `com`.`com_id`, `com`.`com_user_id` AS `usr_id`, `com`.`com_posted_date`, `com`.`com_edit_count`, `com`.`com_edit_date`, `com`.`com_edit_user`, `com`.`com_text`, `usr`.`usr_name`, `usr`.`usr_type`, `usr`.`usr_name` AS `author_name`, `usr`.`usr_type` AS `author_type`, `usr_e`.`usr_name` AS `editor_name`, `usr_e`.`usr_type` AS `editor_type` ' .
+                 'FROM `comments` AS `com` ' .
+                 'INNER JOIN `users` AS `usr` ON `com`.`com_user_id` = `usr`.`usr_id` ' .
+                 'INNER JOIN `users` AS `usr_e` ON `com`.`com_edit_user` = `usr_e`.`usr_id` ' .
                  "WHERE `com`.`com_project` = '$project' AND `com`.`com_commit` = '$hash' " .
                  'ORDER BY `com`.`com_id`';
         $result = $this->db_query($query);
@@ -243,13 +249,17 @@ class CommentPlugin extends VGPlugin {
             $comment = new Comment();
             $comment->id = (int) $data['com_id'];
             $comment->num = $cur_comment;
-            $comment->user->id = (int) $data['usr_id'];
-            $comment->user->name = $data['usr_name'];
-            $comment->user->type = $data['usr_type'];
+            $comment->author->id = (int) $data['com_user_id'];
+            $comment->author->name = $data['author_name'];
+            $comment->author->type = $data['author_type'];
             $comment->project = $project;
             $comment->commit = $hash;
             $comment->posted = new DateTime($data['com_posted_date']);
-            $comment->edited = new DateTime($data['com_edited_date']);
+            $comment->edit->count = (int) $data['com_edit_count'];
+            $comment->edit->date = new DateTime($data['com_edit_date']);
+            $comment->edit->author->id = (int) $data['com_edit_user'];
+            $comment->edit->author->name = $data['editor_name'];
+            $comment->edit->author->type = $data['editor_type'];
             $comment->text = $data['com_text'];
             $comment->render_comment();
             
@@ -271,8 +281,7 @@ class CommentPlugin extends VGPlugin {
         $text = $this->db_quote($text);
         
         // Build database query
-        $query = 'INSERT INTO `comments` (`com_user_id`, `com_project`, ' .
-                 '`com_commit`, `com_posted_date`, `com_text`) ' .
+        $query = 'INSERT INTO `comments` (`com_user_id`, `com_project`, `com_commit`, `com_posted_date`, `com_text`) ' .
                  "VALUES ($user_id, '$project', '$hash', NOW(), '$text')";
         
         // Run query
@@ -284,13 +293,14 @@ class CommentPlugin extends VGPlugin {
     }
     
     // Edit comment in the database
-    private function edit_comment($comment_id, $text) {
+    private function edit_comment($user_id, $comment_id, $text) {
         // Validate and quote data
+        $user_id = (int) $user_id;
         $comment_id = (int) $comment_id;
         $text = $this->db_quote($text);
         
         // Build database query
-        $query = "UPDATE `comments` SET `com_text`='$text' " .
+        $query = "UPDATE `comments` SET `com_text` = '$text', `com_edit_count` = `com_edit_count` + 1, `com_edit_date` = NOW(), `com_edit_user` = $user_id " .
                  "WHERE `com_id` = $comment_id";
         
         // Run query
@@ -346,9 +356,9 @@ class CommentPlugin extends VGPlugin {
         // Create the comment object
         $comment = new Comment();
         $comment->id = -1;
-        $comment->user->id = $user_id;
-        $comment->user->name = $user_name;
-        $comment->user->type = $user_type;
+        $comment->author->id = $user_id;
+        $comment->author->name = $user_name;
+        $comment->author->type = $user_type;
         $comment->project = $project;
         $comment->commit = $commit_id;
         $comment->text = $comment_text;
@@ -496,7 +506,7 @@ class CommentPlugin extends VGPlugin {
         $user_id = (int) $_SESSION['loginid'];
         $user_name = $_SESSION['loginname'];
         $user_type = auth_user_type();
-        if ($user_id != $comment->user->id and $user_type != 'admin') {
+        if ($user_id != $comment->author->id and $user_type != 'admin') {
             // TODO: Improve this error message.
             die('You do not have the permissions to edit this comment.');
         }
@@ -512,7 +522,7 @@ class CommentPlugin extends VGPlugin {
                 $comment->render_comment();
                 
                 // Submit to database
-                $success = $this->edit_comment($comment->id, $comment_text);
+                $success = $this->edit_comment($user_id, $comment->id, $comment_text);
                 
                 if ($success) {
                     // Display success page
@@ -548,7 +558,11 @@ class CommentPlugin extends VGPlugin {
                 // Update comment text and edit date
                 $comment->text = $comment_text;
                 $comment->render_comment();
-                $comment->edited = new DateTime();
+                $comment->edit->count++;
+                $comment->edit->date = new DateTime();
+                $comment->edit->author->id = $user_id;
+                $comment->edit->author->name = $user_name;
+                $comment->edit->author->type = $user_type;
                 
                 // Configure page
                 $page['title'] = "Preview comment - $project - ViewGit";
@@ -609,7 +623,7 @@ class CommentPlugin extends VGPlugin {
         $user_id = (int) $_SESSION['loginid'];
         $user_name = $_SESSION['loginname'];
         $user_type = auth_user_type();
-        if ($user_id != $comment->user->id and $user_type != 'admin') {
+        if ($user_id != $comment->author->id and $user_type != 'admin') {
             // TODO: Improve this error message.
             die('You do not have the permissions to delete this comment.');
         }

@@ -474,7 +474,7 @@ div.comment .body p {
   margin: .5em 0;
 }
 
-div.comment .body p.last_edit {
+div.comment .body p.edit_msg {
   font-style: italic;
 }
 

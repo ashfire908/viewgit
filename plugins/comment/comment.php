@@ -8,18 +8,18 @@ class Comment {
     	require_once('inc/renders/markdown.php');
     	
         // Initialize properties
-        $this->user = new CommentUser();
+        $this->author = new CommentUser();
         $this->posted = new DateTime();
-        $this->edited = new DateTime();
+        $this->edit = new CommentEdit();
     }
     
     public $id;
     public $num;
-    public $user;
+    public $author;
     public $project;
     public $commit;
     public $posted;
-    public $edited;
+    public $edit;
     public $text;
     public $render;
     
@@ -34,4 +34,17 @@ class CommentUser {
     public $id;
     public $name;
     public $type;
+}
+
+// Comment Edit
+class CommentEdit {
+    function __construct() {
+        // Initialize properties
+        $this->author = new CommentUser();
+        $this->date = new DateTime();
+    }
+    
+    public $count;
+    public $date;
+    public $author;
 }
