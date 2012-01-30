@@ -168,8 +168,8 @@ class CommentPlugin extends VGPlugin {
         // Lookup comments
         $query = 'SELECT `com`.`com_user_id`, `com`.`com_project`, `com`.`com_commit`, `com`.`com_posted_date`, `com`.`com_edit_count`, `com`.`com_edit_date`, `com`.`com_edit_user`, `com`.`com_text`, `usr`.`usr_name` AS `author_name`, `usr`.`usr_type` AS `author_type`, `usr_e`.`usr_name` AS `editor_name`, `usr_e`.`usr_type` AS `editor_type` ' .
                  'FROM `comments` AS `com` ' .
-                 'INNER JOIN `users` AS `usr` ON `com`.`com_user_id` = `usr`.`usr_id` ' .
-                 'INNER JOIN `users` AS `usr_e` ON `com`.`com_edit_user` = `usr_e`.`usr_id` ' .
+                 'LEFT JOIN `users` AS `usr` ON `com`.`com_user_id` = `usr`.`usr_id` ' .
+                 'LEFT JOIN `users` AS `usr_e` ON `com`.`com_edit_user` = `usr_e`.`usr_id` ' .
                  "WHERE `com`.`com_id` = $id";
         $result = $this->db_query($query);
         // TODO: Handle this with an error message
@@ -229,8 +229,8 @@ class CommentPlugin extends VGPlugin {
         // Lookup comments
         $query = 'SELECT `com`.`com_id`, `com`.`com_user_id` AS `usr_id`, `com`.`com_posted_date`, `com`.`com_edit_count`, `com`.`com_edit_date`, `com`.`com_edit_user`, `com`.`com_text`, `usr`.`usr_name`, `usr`.`usr_type`, `usr`.`usr_name` AS `author_name`, `usr`.`usr_type` AS `author_type`, `usr_e`.`usr_name` AS `editor_name`, `usr_e`.`usr_type` AS `editor_type` ' .
                  'FROM `comments` AS `com` ' .
-                 'INNER JOIN `users` AS `usr` ON `com`.`com_user_id` = `usr`.`usr_id` ' .
-                 'INNER JOIN `users` AS `usr_e` ON `com`.`com_edit_user` = `usr_e`.`usr_id` ' .
+                 'LEFT JOIN `users` AS `usr` ON `com`.`com_user_id` = `usr`.`usr_id` ' .
+                 'LEFT JOIN `users` AS `usr_e` ON `com`.`com_edit_user` = `usr_e`.`usr_id` ' .
                  "WHERE `com`.`com_project` = '$project' AND `com`.`com_commit` = '$hash' " .
                  'ORDER BY `com`.`com_id`';
         $result = $this->db_query($query);
