@@ -273,6 +273,7 @@ elseif ($action === 'patch') {
 /*
  * rss-log - RSS feed of project changes
  * @param p project
+ * @param h OPTIONAL commit id to start showing log from
  */
 elseif ($action === 'rss-log') {
 	$page['project'] = validate_project($_REQUEST['p']);
@@ -288,8 +289,14 @@ elseif ($action === 'rss-log') {
 	$page['rss_items'] = array();
 
 	$diffstat = strstr($conf['rss_item_description'], '{DIFFSTAT}');
+       
+        if (isset($_REQUEST['h'])) {
+                $page['ref'] = validate_hash($_REQUEST['h']);
+        } else {
+                $page['ref'] = 'HEAD';
+        }
 
-	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items']);
+	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items'], $page['ref']);
 	foreach ($revs as $rev) {
 		$info = git_get_commit_info($page['project'], $rev);
 		$link = $ext_url . makelink(array('a' => 'commit', 'p' => $page['project'], 'h' => $rev));
