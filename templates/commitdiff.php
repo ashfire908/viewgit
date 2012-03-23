@@ -14,7 +14,7 @@ echo ' ['. $page['author_datetime'] .']';
 </div>
 
 <div class="filelist">
-<table>
+<table id="filelist">
 <thead>
 <tr>
 	<th>Filename</th>

@@ -1,5 +1,5 @@
 
-<table>
+<table id="projects">
 <thead>
 <tr>
 	<th>Project</th>

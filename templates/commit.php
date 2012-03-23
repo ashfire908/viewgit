@@ -1,6 +1,6 @@
 <h1><?php echo htmlentities_wrapper($page['message_firstline']); ?></h1>
 
-<table class="commit">
+<table class="commit" id="commit">
 <tbody>
 <tr>
 	<td>Author</td>
@@ -48,7 +48,7 @@ foreach ($page['parents'] as $parent) {
 <div class="commitmessage"><pre><?php echo htmlentities_wrapper($page['message_full']); ?></pre></div>
 
 <div class="filelist">
-<table>
+<table id="commit_filelist">
 <thead>
 <tr>
 	<th colspan="2">Affected files:</th>
