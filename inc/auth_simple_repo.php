@@ -8,10 +8,12 @@ To Use:
 1. Copy this file to <viewgitdir>/inc/auth_simple.php
 2. Update inc/localconfig.php to use simple auth module:
 
-	$conf['auth_lib'] = 'simple';
-	$conf['auth_simple_users'] = array(
-		'username1'=>'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
-		'username2'=>'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
+	$conf['auth_lib'] = 'simple_repo';
+	$conf['auth_simplerepo_users'] = array(
+		'username1'=>array('password'=>'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn',
+		                   'projects'=>array('project1', 'project2'))
+		'username2'=>array('password'=>'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn',
+		                   'projects'=>array('project1', 'project4'))
 	);
 
    where nnn is the md5 of the password for each user.
@@ -24,6 +26,7 @@ Released under AGPLv3 or older.
 Developed by Topten Software (Brad Robinson) 
 http://www.toptensoftware.com
 
+Modifications by Andrew Hampe to support by-repo perms
 */
 
 function auth_login_check($username, $password)
@@ -40,11 +43,36 @@ function auth_login_check($username, $password)
     return array(false, null);
 }
 
+function auth_project_check($username, $project)
+{
+    global $conf;
+    
+    if (isset($conf['auth_simplerepo_users'][$username]) and
+        isset($conf['auth_simplerepo_users'][$username]['projects']) and
+	    in_array($project, $conf['auth_simplerepo_users'][$username]['projects'])) {
+	    return true;
+	} else {
+	    return false;
+	}
+}
+
+function auth_projects_allowed_check($username)
+{
+    global $conf;
+    
+    if (isset($conf['auth_simplerepo_users'][$username]) and
+        isset($conf['auth_simplerepo_users'][$username]['projects'])) {
+        return $conf['auth_simplerepo_users'][$username]['projects'];
+    } else {
+        return array();
+    }
+}
+
 function auth_check()
 {
     global $conf;
     global $page;
-    
+
     // Setup session
     if (isset($conf['session'])) {
         // Session Name
@@ -65,10 +93,10 @@ function auth_check()
 	
 	// Check if already signed in.
 	if (isset($_SESSION['loginname'])) {
-		return;
+	    return;
 	}
-
-    // Don't check login by default
+	
+	// Don't check login by default
 	$check_login = false;
 	
     // Form submit
@@ -97,8 +125,8 @@ function auth_check()
             header('WWW-Authenticate: Basic realm="ViewGit"');
         }
     }
-    
-    if ($check_login) {
+	
+	if ($check_login) {
 	    // Check if login is vaild
 		list($verified, $user) = auth_login_check($username, $password);
 		if ($verified) {
@@ -141,20 +169,51 @@ function auth_check()
 	die;
 }
 
-// Blank project access function
 function auth_project($project, $return = false)
 {
-    if ($return == true) {
-        return true;
+    global $conf;
+    global $page;
+    
+    $username = $_SESSION['loginname'];
+    if (auth_project_check($username, $project)) {
+        // User has access to the project.
+        if ($return == true) {
+            // Return whether or not the user has access
+            return true;
+        }
+        // Return silently
+		return;
     } else {
-        return;
+        // User does not have access to the project.
+        if ($return == true) {
+            // Return whether or not the user has access
+            return false;
+        }
+        
+        // Set page title
+        $page['title'] = "Access Denied - ViewGit";
+        
+        // Set project name
+        if (!isset($page['project'])) {
+            $page['project'] = $project;
+        }
+        
+        // Display error page
+	    require('templates/header.php');
+	    ?>
+	<h2>Access Denied</h2>
+	<p style="border: 1px solid red; padding: 2px; background: #f77;">You do not have access to the '<?php echo htmlspecialchars($project)?>' project.</p>
+<?php
+	    require('templates/footer.php');	
+	    die;
     }
 }
 
-// Blank accessable projects function
 function auth_projects_allowed()
 {
     global $conf;
     
-    return array_keys($conf['projects']);
+    $username = $_SESSION['loginname'];
+    $projects = auth_projects_allowed_check($username);
+    return $projects;
 }

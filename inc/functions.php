@@ -132,7 +132,7 @@ function git_get_changed_paths($project, $hash = 'HEAD')
 {
 	$result = array();
 	
-	$output = run_git($project, "diff-tree -r $hash^1 $hash");
+	$output = run_git($project, "diff-tree -r -C $hash^1 $hash");
 	
 	foreach($output as $line) {
 	    if ($line == '') {

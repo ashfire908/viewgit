@@ -1,8 +1,16 @@
+# Disable folder index pages
 Options -Indexes
+# Set PHP options
 php_flag register_globals off
 php_flag magic_quotes_gpc off
 php_flag short_open_tag off
 
+# Enable Rewrite
 RewriteEngine On
-RewriteBase /~hoxu/viewgit/
+RewriteBase /~hoxu/viewgit/ # URL path to ViewGit
+
+# Do checkout for project.git folder 
 RewriteRule ^([^.]*).git/(.*)	?a=co&p=$1&r=$2
+
+# Enable HTTP Auth for PHP running as CGI
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
