@@ -58,6 +58,7 @@ class VGPlugin
 	 * page_start - after body is opened
 	 * footer - before closing the body tag
 	 * pagenav - $page['links'] can be modified to add more pagenav links, see templates/header.php
+	 * nav - inside the nav header
 	 */
 	function hook($type) {}
 
