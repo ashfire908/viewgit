@@ -49,6 +49,9 @@ if (isset($page['path'])) {
 		}
 	}
 }
+
+VGPlugin::call_hooks('nav');
+
 ?>
 </div>
 <div id="page_body">

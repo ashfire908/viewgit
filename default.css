@@ -91,6 +91,10 @@ table tbody tr:hover {
 	background-color: #e0ffe0;
 }
 
+form#login table tbody tr:hover {
+	background-color: inherit;
+}
+
 table th {
 	background-color: #cfcfcf;
 	text-align: left;
@@ -195,6 +199,17 @@ span.tag {
 	background-color: #ffa;
 	border-right: 1px solid #990;
 	border-bottom: 1px solid #990;
+}
+
+/* index template */
+table a.project_allow {
+    padding-left: 20px;
+    background: url('images/silk/key.png') no-repeat 0 50%;
+}
+
+table a.project_deny {
+    padding-left: 20px;
+    background: url('images/silk/lock.png') no-repeat 0 50%;
 }
 
 /* summary template */
@@ -320,3 +335,40 @@ table.tree .blob a.item_name{
 	font-size: 1.2em;
 }
 
+/* Login Form */
+#login fieldset {
+	border-style: none;
+	padding: 0;
+}
+
+#login fieldset label {
+	display: block;
+	float: left;
+	width: 8em;
+	margin: 3px 0;
+}
+
+#login fieldset input {
+	margin: 4px 0;
+}
+
+#login fieldset input[type="text"], #login fieldset input[type="password"] {
+	width: 12em;
+}
+
+/* Logout Plugin */
+.nav #logout {
+    float: right;
+    font-size: .8em;
+    padding-top: .4em;
+    padding-right: 137px;
+}
+
+.nav #logout a {
+    font-size: 1em;
+    margin-left: 17px;
+}
+
+.nav #logout a:hover {
+    text-decoration: underline;
+}

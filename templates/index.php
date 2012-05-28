@@ -13,7 +13,17 @@
 foreach ($page['projects'] as $p) {
 	$tr_class = $tr_class=="odd" ? "even" : "odd";
 	echo "<tr class=\"$tr_class\">\n";
-	echo "\t<td><a href=\"". makelink(array('a' => 'summary', 'p' => $p['name'])) ."\">$p[name]</a></td>\n";
+	echo "\t<td><a href=\"". makelink(array('a' => 'summary', 'p' => $p['name'])) ."\"";
+	if (isset($conf['auth_show_access']) and $conf['auth_show_access']) {
+	    echo ' class="';
+	    if (in_array($p['name'], $page['projects_auth'])) {
+	        echo 'project_allow'; // User has access to project
+	    } else {
+	        echo 'project_deny'; // User does not have access to the project
+	    }
+	    echo '"';
+	}
+	echo ">$p[name]</a></td>\n";
 	echo "\t<td>". htmlentities_wrapper($p['description']) ."</td>\n";
 	echo "\t<td>". htmlentities_wrapper($p['head_datetime']) ."</td>\n";
 	echo "\t<td>";
