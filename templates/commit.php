@@ -52,15 +52,98 @@ foreach ($page['parents'] as $parent) {
 <thead>
 <tr>
 	<th>Affected files:</th>
+	<th class="actions">Actions:</th>
 </tr>
 </thead>
 <tbody>
 
 <?php
 foreach ($page['affected_files'] as $details) {
-	echo "<tr><td>";
-	echo "<a href=\"" . makelink(array('a' => 'viewblob', 'p' => $page['project'], 'h' => $details['hash'], 'f' => $details['name'])) . "\">$details[name]</a>";
-	echo "</td><td></td></tr>";
+	$details = array_merge($details, array('link_text' => false,
+	                                       'actions' => array()));
+	
+	// Call commit file hooks (before we apply the defaults)
+	VGPlugin::call_hooks('commitfile_pre', $details);
+	
+	// Apply Defaults
+	// Determine if the filename text should be linked
+	switch ($details['status']) {
+	    case 'A': // Addition
+	    case 'C': // Copy
+	    case 'M': // Modification
+	    case 'R': // Renamed
+	    case 'T': // Type Change
+	        $details['link_text'] = true;
+	        break;
+	    case 'D': // Delete
+	    case 'U': // Unmerged
+	    case 'X': // Unknown
+	    default:
+	        $details['link_text'] = false;
+	        break;
+	}
+	
+	// Call commit file hooks (after we applied the defaults)
+	VGPlugin::call_hooks('commitfile_post', $details);
+	
+	// Display file
+	// Determine commit icon class
+    if (isset($conf['commit_icons']) and $conf['commit_icons']) {
+        switch ($details['status']) {
+            case 'A': // Addition
+                $icon_class = 'commit_add';
+                break;
+            case 'C': // Copy
+                $icon_class = 'commit_copy';
+                break;
+            case 'D': // Delete
+                $icon_class = 'commit_delete';
+                break;
+            case 'M': // Modification
+                $icon_class = 'commit_edit';
+                break;
+            case 'R': // Renamed
+                $icon_class = 'commit_rename';
+                break;
+            case 'T': // Type Change
+                $icon_class = 'commit_type';
+                break;
+            case 'U': // Unmerged
+                $icon_class = 'commit_unmerge';
+                break;
+            case 'X': // Unknown
+            default:
+                $icon_class = 'commit_unknown';
+                break;
+	    }
+    }
+    
+    // Set link text
+    $text = $details['file1'];
+    if ($details['status'] == 'C' or $details['status'] == 'R') {
+        $text .= " <span class=\"commit_file2\">$details[file2]</span> ($details[score]%)";
+    }
+    
+    // Display item
+    echo "<tr>\n<td>";
+    if ($details['link_text']) {
+        // Link the text
+        echo '<a href="' . makelink(array('a' => 'viewblob', 'p' => $page['project'], 'h' => $details['hash'], 'hb' => $page['commit_id'], 'f' => $details['file1'])) . '"';
+        if (isset($conf['commit_icons']) and $conf['commit_icons']) {
+            echo " class=\"$icon_class\"";
+        }
+        echo ">$text</a>";
+    } else {
+        // Don't link the text
+        echo '<span';
+        if (isset($conf['commit_icons']) and $conf['commit_icons']) {
+            echo " class=\"$icon_class\"";
+        }
+        echo ">$text</span>";
+    }
+    echo "</td>\n<td>";
+    echo implode(' ', $details['actions']);
+    echo "</td>\n</tr>";
 }
 ?>
 

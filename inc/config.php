@@ -70,9 +70,9 @@ $conf['rss_ttl'] = 10;
 $conf['rss_max_items'] = 30;
 
 // RSS item format. Allowed formatting:
-// {AUTHOR}, {AUTHOR_MAIL}, {SHORTLOG}, {LOG}, {COMMITTER}, {COMMITTER_MAIL}, {DIFFSTAT}
+// {AUTHOR}, {AUTHOR_MAIL}, {SHORTLOG}, {LOG}, {COMMITTER}, {COMMITTER_MAIL}, {DIFFSTAT}, {BRANCHES}
 $conf['rss_item_title'] = '{SHORTLOG} ({AUTHOR})';
-$conf['rss_item_description'] = '<pre>{LOG}</pre><b>{AUTHOR}</b> &lt;{AUTHOR_MAIL}&gt;<br /><pre>{DIFFSTAT}</pre>';
+$conf['rss_item_description'] = '<pre>{LOG}</pre><b>{AUTHOR}</b> &lt;{AUTHOR_MAIL}&gt;<br />Branch(s): {BRANCHES}<br /><pre>{DIFFSTAT}</pre>';
 
 $conf['debug'] = false;
 $conf['debug_command_trace'] = false;

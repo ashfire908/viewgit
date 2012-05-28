@@ -212,6 +212,52 @@ table.heads th.date {
 	width: 15%;
 }
 
+/* commit template */
+
+table.filelist th.actions {
+	width: 10%;
+}
+
+.filelist .commit_add {
+    padding-left: 20px;
+    background: url('images/silk/page_white_add.png') no-repeat 0 50%;
+}
+
+.filelist .commit_copy {
+    padding-left: 20px;
+    background: url('images/silk/page_white_copy.png') no-repeat 0 50%;
+}
+
+.filelist .commit_delete {
+    padding-left: 20px;
+    background: url('images/silk/page_white_delete.png') no-repeat 0 50%;
+}
+
+.filelist .commit_edit {
+    padding-left: 20px;
+    background: url('images/silk/page_white_edit.png') no-repeat 0 50%;
+}
+
+.filelist .commit_rename {
+    padding-left: 20px;
+    background: url('images/silk/page_white_go.png') no-repeat 0 50%;
+}
+
+.filelist .commit_type {
+    padding-left: 20px;
+    background: url('images/silk/page_white_wrench.png') no-repeat 0 50%;
+}
+
+.filelist .commit_unmerge {
+    padding-left: 20px;
+    background: url('images/silk/arrow_divide.png') no-repeat 0 50%;
+}
+
+.filelist .commit_unknown {
+    padding-left: 20px;
+    background: url('images/silk/page_white_error.png') no-repeat 0 50%;
+}
+
 /* commitdiff template */
 
 .commitmessage {
@@ -244,6 +290,10 @@ div.diff {
 
 /* tree template */
 table.tree th.perm {
+	width: 10%;
+}
+
+table.tree th.actions {
 	width: 10%;
 }
 

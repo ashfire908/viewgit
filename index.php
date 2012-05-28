@@ -274,7 +274,8 @@ elseif ($action === 'patch') {
 elseif ($action === 'rss-log') {
 	$page['project'] = validate_project($_REQUEST['p']);
 
-	$ext_url = 'http://'. $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) .'/';
+	$scheme = !isset($conf['uri_scheme'])? 'http' : $conf['uri_scheme'];
+	$ext_url = $scheme . '://'. $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) .'/';
 
 	$page['rss_title'] = "Log for $page[project]";
 	$page['rss_link'] = $ext_url . makelink(array('a' => 'summary', 'p' => $page['project']));
@@ -286,9 +287,10 @@ elseif ($action === 'rss-log') {
 
 	$diffstat = strstr($conf['rss_item_description'], '{DIFFSTAT}');
 
-	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items']);
+	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items'], '--all');
 	foreach ($revs as $rev) {
 		$info = git_get_commit_info($page['project'], $rev);
+		$info['branches'] = git_get_commit_branch($page['project'], $rev);
 		$link = $ext_url . makelink(array('a' => 'commit', 'p' => $page['project'], 'h' => $rev));
 		if ($diffstat) {
 			$info['diffstat'] = git_diffstat($page['project'], $rev);
@@ -490,15 +492,16 @@ elseif ($action === 'viewblob') {
 	}
 
 	// For the header's pagenav
-	$info = git_get_commit_info($page['project'], $page['commit_id']);
+	$info = git_get_commit_info($page['project'], $page['commit_id'], $page['path']);
 	$page['commit_id'] = $info['h'];
 	$page['tree_id'] = $info['tree'];
+	$page['lastlog'] = $info;
 
 	$page['pathinfo'] = git_get_path_info($page['project'], $page['commit_id'], $page['path']);
 
 	$page['data'] = fix_encoding(join("\n", run_git($page['project'], "cat-file blob $page[hash]")));
 
-	$page['lastlog'] = git_get_commit_info($page['project'], 'HEAD', $page['path']);
+	//$page['lastlog'] = git_get_commit_info($page['project'], 'HEAD', $page['path']);
 
 	// GeSHi support
 	if ($conf['geshi'] && strpos($page['path'], '.')) {
@@ -506,7 +509,7 @@ elseif ($action === 'viewblob') {
 		require_once($conf['geshi_path']);
 		$parts = explode('.', $page['path']);
 		$ext = array_pop($parts);
-		$geshi = new Geshi($page['data']);
+		$geshi = new Geshi($page['data'], '');
 		$lang = $geshi->get_language_name_from_extension($ext);
 		if (strlen($lang) > 0) {
 			$geshi->set_language($lang);
