@@ -22,7 +22,7 @@ VGPlugin::call_hooks('page_start');
 if (isset($page['notices'])) {
 	echo '<div class="notices">';
 	foreach ($page['notices'] as $n) {
-		echo "<p class=\"$n[class]\">$n[message]</p>";
+		echo "<p class=\"$n[class]\">". htmlentities_wrapper($n['message']) ."</p>";
 	}
 	echo '</div>';
 }
@@ -33,6 +33,10 @@ if (isset($page['notices'])) {
 <?php
 if (isset($page['project'])) {
 	echo " &raquo; <a href=\"". makelink(array('a' => 'summary', 'p' => $page['project'])) ."\">$page[project]</a>";
+	$projconf = $conf['projects'][$page['project']];
+	if ($projconf['www']) {
+		tpl_extlink($projconf['www']);
+	}
 }
 if (isset($page['subtitle'])) {
 	echo " : $page[subtitle]";

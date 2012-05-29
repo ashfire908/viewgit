@@ -10,7 +10,7 @@ require_once('templates/tags.php');
 
 <h1>Heads</h1>
 
-<table class="heads">
+<table class="heads" id="heads">
 <thead>
 <tr>
 	<th class="date">Date</th>

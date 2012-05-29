@@ -1,6 +1,6 @@
 <h1><a href="<?php echo makelink(array('a' => 'shortlog', 'p' => $page['project'])); ?>">Shortlog</a></h1>
 
-<table class="shortlog">
+<table class="shortlog" id="shortlog">
 <thead>
 <tr>
 	<th class="date">Date</th>

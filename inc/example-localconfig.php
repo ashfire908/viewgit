@@ -9,6 +9,7 @@ $conf['projects'] = array(
 	'bar' => array(
 		'repo' => '/home/user/projects/foo/.git',
 		'description' => 'Optional overridden description, otherwise it is taken from .git/description'
+		'www' => 'http://www.google.com', # optional
 	),
 );
 
@@ -31,3 +32,5 @@ $conf['datetime'] = '%y-%m-%d %H:%M';
 // Extra security
 $conf['allow_checkout'] = false;
 
+// Exclude robots
+//$conf['robots'] = "noindex, nofollow";

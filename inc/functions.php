@@ -8,15 +8,19 @@ function debug($msg)
 	global $conf;
 
 	if ($conf['debug']) {
-		file_put_contents('php://stderr', gmstrftime('%H:%M:%S') ." viewgit: $_SERVER[REMOTE_ADDR]:$_SERVER[REMOTE_PORT] $msg\n", FILE_APPEND);
+		file_put_contents('php://stderr', strftime('%H:%M:%S') ." viewgit: $_SERVER[REMOTE_ADDR]:$_SERVER[REMOTE_PORT] $msg\n", FILE_APPEND);
 	}
 }
 
 function fix_encoding($in_str)
 {
-	$cur_encoding = mb_detect_encoding($in_str) ;
-	if($cur_encoding == "UTF-8" && mb_check_encoding($in_str,"UTF-8")) {
-		return $in_str;
+	if (function_exists("mb_detect_encoding") && function_exists("mb_check_encoding")) {
+		$cur_encoding = mb_detect_encoding($in_str) ;
+		if($cur_encoding == "UTF-8" && mb_check_encoding($in_str,"UTF-8")) {
+			return $in_str;
+		} else {
+			return utf8_encode($in_str);
+		}
 	} else {
 		return utf8_encode($in_str);
 	}
@@ -91,14 +95,15 @@ function get_project_info($name)
 
 	// If description is not set, read it from the repository's description
 	if (!isset($info['description'])) {
-		$info['description'] = file_get_contents($info['repo'] .'/description');
+		$info['description'] = @file_get_contents($info['repo'] .'/description');
 	}
 
 	$headinfo = git_get_commit_info($name, '--all');
 	$info['head_stamp'] = $headinfo['author_utcstamp'];
-	$info['head_datetime'] = gmstrftime($conf['datetime'], $headinfo['author_utcstamp']);
+	$info['head_datetime'] = strftime($conf['datetime'], $headinfo['author_utcstamp']);
 	$info['head_hash'] = $headinfo['h'];
 	$info['head_tree'] = $headinfo['tree'];
+	$info['message'] = $headinfo['message'];
 
 	return $info;
 }
@@ -223,10 +228,10 @@ function git_get_commit_info($project, $hash = 'HEAD', $path = null)
 		$info['message_firstline'] = '(no message)';
 	}
 
-	$info['author_datetime'] = gmstrftime($conf['datetime_full'], $info['author_utcstamp']);
-	$info['author_datetime_local'] = gmstrftime($conf['datetime_full'], $info['author_stamp']) .' '. $info['author_timezone'];
-	$info['committer_datetime'] = gmstrftime($conf['datetime_full'], $info['committer_utcstamp']);
-	$info['committer_datetime_local'] = gmstrftime($conf['datetime_full'], $info['committer_stamp']) .' '. $info['committer_timezone'];
+	$info['author_datetime'] = strftime($conf['datetime_full'], $info['author_utcstamp']);
+	$info['author_datetime_local'] = strftime($conf['datetime_full'], $info['author_stamp']) .' '. $info['author_timezone'];
+	$info['committer_datetime'] = strftime($conf['datetime_full'], $info['committer_utcstamp']);
+	$info['committer_datetime_local'] = strftime($conf['datetime_full'], $info['committer_stamp']) .' '. $info['committer_timezone'];
 
 	return $info;
 }
@@ -256,6 +261,11 @@ function git_get_heads($project)
 		$fullname = substr($line, 41);
 		$tmp = explode('/', $fullname);
 		$name = array_pop($tmp);
+		$pre = array_pop($tmp);
+		if ($pre != 'heads')
+		{
+			$name = $pre . '/' . $name;
+		}
 		$heads[] = array('h' => substr($line, 0, 40), 'fullname' => "$fullname", 'name' => "$name");
 	}
 
@@ -283,7 +293,7 @@ function git_get_path_info($project, $root_hash, $path)
 	foreach ($parts as $p) {
 		$entry = git_ls_tree_part($project, $tid, $p);
 		if (is_null($entry)) {
-			die("Invalid path info: $path");
+			die('Invalid path info.');
 		}
 		$pathinfo[] = $entry;
 		$tid = $entry['hash'];
@@ -439,7 +449,7 @@ function handle_shortlog($project, $hash = 'HEAD', $page = 0)
 		}
 		$result[] = array(
 			'author' => $info['author_name'],
-			'date' => gmstrftime($conf['datetime'], $info['author_utcstamp']),
+			'date' => strftime($conf['datetime'], $info['author_utcstamp']),
 			'message' => $info['message'],
 			'commit_id' => $rev,
 			'tree' => $info['tree'],
@@ -467,7 +477,7 @@ function handle_tags($project, $limit = 0)
 		$info = git_get_commit_info($project, $tag['h']);
 		$result[] = array(
 			'stamp' => $info['author_utcstamp'],
-			'date' => gmstrftime($conf['datetime'], $info['author_utcstamp']),
+			'date' => strftime($conf['datetime'], $info['author_utcstamp']),
 			'h' => $tag['h'],
 			'fullname' => $tag['fullname'],
 			'name' => $tag['name'],
@@ -592,6 +602,11 @@ function run_git_passthru($project, $command)
 	return $result;
 }
 
+function tpl_extlink($link)
+{
+	echo "<a href=\"$link\" class=\"external\">&#8599;</a>";
+}
+
 /**
  * Makes sure the given project is valid. If it's not, this function will
  * die().
@@ -613,7 +628,7 @@ function validate_project($project)
  */
 function validate_hash($hash)
 {
-	if (!preg_match('/^[0-9a-z]{40}$/', $hash) && !preg_match('!^refs/(heads|tags)/[-_.0-9a-zA-Z]+$!', $hash) && $hash !== 'HEAD') {
+	if (!preg_match('/^[0-9a-z]{40}$/', $hash) && !preg_match('!^refs/(heads|tags)/[-_.0-9a-zA-Z/]+$!', $hash) && $hash !== 'HEAD') {
 		die('Invalid hash');
 
 	}

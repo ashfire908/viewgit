@@ -1,4 +1,4 @@
-<table class="tree">
+<table class="tree" id="tree">
 <thead>
 <tr>
 	<th class="perm">Permissions</th>

@@ -32,6 +32,9 @@ if (!$conf['debug']) {
 	error_reporting(E_ALL ^ E_NOTICE);
 }
 
+// Timezone
+date_default_timezone_set($conf['timezone']);
+
 // Find requested action
 $action = 'index';
 if (isset($_REQUEST['a'])) {
@@ -293,6 +296,7 @@ elseif ($action === 'patch') {
 /*
  * rss-log - RSS feed of project changes
  * @param p project
+ * @param h OPTIONAL commit id to start showing log from
  */
 elseif ($action === 'rss-log') {
 	$page['project'] = validate_project($_REQUEST['p']);
@@ -312,8 +316,14 @@ elseif ($action === 'rss-log') {
 	$page['rss_items'] = array();
 
 	$diffstat = strstr($conf['rss_item_description'], '{DIFFSTAT}');
+       
+        if (isset($_REQUEST['h'])) {
+                $page['ref'] = validate_hash($_REQUEST['h']);
+        } else {
+                $page['ref'] = 'HEAD';
+        }
 
-	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items'], '--all');
+	$revs = git_get_rev_list($page['project'], 0, $conf['rss_max_items'], $page['ref']);
 	foreach ($revs as $rev) {
 		$info = git_get_commit_info($page['project'], $rev);
 		$info['branches'] = git_get_commit_branch($page['project'], $rev);
@@ -367,7 +377,7 @@ elseif ($action === 'search') {
 		$info = git_get_commit_info($page['project'], $c);
 		$shortlog[] = array(
 			'author' => $info['author_name'],
-			'date' => gmstrftime($conf['datetime'], $info['author_utcstamp']),
+			'date' => strftime($conf['datetime'], $info['author_utcstamp']),
 			'message' => $info['message'],
 			'commit_id' => $info['h'],
 			'tree' => $info['tree'],
@@ -431,7 +441,7 @@ elseif ($action === 'summary') {
 	foreach ($heads as $h) {
 		$info = git_get_commit_info($page['project'], $h['h']);
 		$page['heads'][] = array(
-			'date' => gmstrftime($conf['datetime'], $info['author_utcstamp']),
+			'date' => strftime($conf['datetime'], $info['author_utcstamp']),
 			'h' => $h['h'],
 			'fullname' => $h['fullname'],
 			'name' => $h['name'],

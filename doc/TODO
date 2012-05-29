@@ -1,3 +1,4 @@
+- php.ini passthrough check (archive etc won't work if it's disabled)
 - annotate/blame view
 	- git annotate -l -t <filename>
 	- links from

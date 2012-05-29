@@ -1,6 +1,6 @@
 <h1>Tags</h1>
 
-<table class="heads">
+<table class="heads" id="tags">
 <thead>
 <tr>
 	<th class="date">Date</th>
