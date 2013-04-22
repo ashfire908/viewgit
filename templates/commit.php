@@ -151,3 +151,9 @@ foreach ($page['affected_files'] as $details) {
 </table>
 </div>
 
+<?php
+// call plugins that register "commit" hook
+if (in_array('commit', array_keys(VGPlugin::$plugin_hooks))) {
+	VGPlugin::call_hooks('commit');
+}
+?>
